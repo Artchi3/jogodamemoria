@@ -1,5 +1,5 @@
-<script setup>
-import GameCard from './GameCard.vue';
+<script setup> 
+
 defineProps({
   msg: {
     type: String,
@@ -10,38 +10,7 @@ defineProps({
 </script>
 
 <template>
-  <div class="game">
-    <h3>Insira seu nome de jogador para começar!</h3>
-    <form action="">
-        <input type="text" name="" id=""/>
-        <button>INICIAR!</button>
-    </form>
-    <ul class="gameboard">
-        <li class="card"></li>
-        <li class="card"></li>
-        <li class="card"></li>
-        <li class="card"></li>
-        <li class="card"></li>
-        <li class="card"></li>
-        <li class="card"></li>
-        <li class="card"></li>
-        <li class="card"></li>
-        <li class="card"></li>
-        <li class="card"></li>
-        <li class="card"></li>
-        <li class="card"></li>
-        <li class="card"></li>
-        <li class="card"></li>
-        <li class="card"></li>
-        <li class="card"></li>
-        <li class="card"></li>
-        <li class="card"></li>
-        <li class="card"></li>
-    </ul>
-    <div>
-
-    </div>
-  </div>
+  
 </template>
 
 <style scoped>
@@ -50,7 +19,7 @@ defineProps({
     align-items: center;
     justify-content: center;
     flex-direction: column;
-    
+
 }
 .gameboard{
     display: grid;

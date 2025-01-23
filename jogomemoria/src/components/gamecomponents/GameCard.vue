@@ -1,22 +1,22 @@
-<script setup>
-defineProps({
-  msg: {
-    type: String,
-    required: true,
-  },
-})
-setup();{
-
+<script > 
+export default{
+  props:{
+    value:{
+      type:Number,
+      required:true
+    }
+  }
 }
 </script>
 
 <template>
-
+  <div class="card"> 
+     <div class="cardface is-front">{{ value }}
+      </div>
+      <div class="cardface is-back"></div>
+  </div>
 </template>
 
-<style scoped> 
-.card{
-    border: 2px solid red;
-    list-style: none;
-}
+<style scoped>
+
 </style>
