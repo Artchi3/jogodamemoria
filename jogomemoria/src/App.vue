@@ -11,7 +11,16 @@ export default {
   setup(){
     const listCard = ref([]) 
 
-    const cardItems =[0,1,2,3,4,5,6,7,8,9]
+    const cardItems =[1,2,3,4,5,6,7,8,9,10]
+
+    const shuffleCards = () =>{   
+      listCard.value =  _.shuffle(listCard.value)
+      console.log(listCard)
+      console.log(listCard.value) 
+      listCard.value = listCard.value.map((card,index)=>{
+        return {...card,position:index}
+      })
+    }
     cardItems.forEach(item => {
       listCard.value.push({ 
         value:item,
@@ -26,9 +35,10 @@ export default {
         matched: false
       })
     })
-    listCard.value = listCard.value.map((card,index)=>{
-      return {...card,position:index}
-    })
+    
+    
+    
+    
 
     const userSelect = ref([])
 
@@ -57,11 +67,9 @@ export default {
       }
     }
 
-    const shuffle = () =>{
-      listCard.value = _.shuffle(listCard.value)
-    }
+    
     const restart =()=>{
-      shuffle()
+      
       listCard.value = listCard.value.map((card, index) => {
         return {
           ...card,
@@ -69,7 +77,8 @@ export default {
           position:index,
           visible: false
         }
-      })
+      });
+      shuffleCards();
     }
     watch(userSelect,(currValue)=>{ 
       if (currValue.length ===2) { 
@@ -95,7 +104,7 @@ export default {
       pairRamains,
       status,
       flipCard,
-      shuffle,
+      shuffleCards,
       restart
       
     }
@@ -111,8 +120,8 @@ export default {
     <form action="" class="greetinggame">
       
       <h1>Bem vindo, insira seu nome de jogador para inciar</h1>
-      <input type="text">
-      <button @click.prevent="shuffle"></button>
+      <input type="text" placeholder="Artchi3">
+      <button @click.prevent="shuffleCards">Iniciar</button>
       
     </form>
     <h2>{{ pairRamains }}</h2>
@@ -139,20 +148,24 @@ export default {
 </template> 
 
 <style>
+body{
+  background-color: #133017;
+}
 #app {
   font-family: Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
-  color: #2c3e50;
+  color: #fff;
   margin-top: 60px;
+  
 }
 .gamebord{
   display: grid;
-  grid-template-columns: 100px 100px 100px 100px ;
-  grid-template-rows: 100px 100px 100px 100px 100px ;
-  grid-row-gap: 30px ;
-  grid-column-gap: 30px ;
+  grid-template-columns: 75px 75px 75px 75px 75px ;
+  grid-template-rows: 100px 100px 100px 100px  ;
+  grid-row-gap: 25px ;
+  grid-column-gap: 25px ;
   justify-content: center;
 }
 </style>

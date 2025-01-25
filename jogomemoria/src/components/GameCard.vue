@@ -37,10 +37,12 @@
 <template>  
     <div class="card" @click="cardSelected">
         <div v-if="visible" class="cardface front">
-            {{ value }} -- {{ matched }}-- {{ position }}
+            <label class="checkmark" v-if="matched"></label>
+            <img :src="`/baralho/${value}.PNG`" :alt="value">
+            {{ value }} {{ position }} -- {{ faceVal }} 
+            
         </div>
-        <div v-else class="cardface back">
-            BACK{{ position }}
+        <div v-else class="cardface back"> {{ value }} {{ position }} -- {{ faceVal }} 
         </div>    
     </div>
 
@@ -57,21 +59,41 @@
     color: #2c3e50;
     margin-top: 60px;
   }
+  .checkmark{
+    display: block;
+    width: 35px;
+    height: 35px;
+    position: absolute;
+    bottom: 35%;
+    right: 25%;
+    border-radius: 100%;
+    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" enable-background="new 0 0 64 64"><path d="M32,2C15.431,2,2,15.432,2,32c0,16.568,13.432,30,30,30c16.568,0,30-13.432,30-30C62,15.432,48.568,2,32,2z M25.025,50 l-0.02-0.02L24.988,50L11,35.6l7.029-7.164l6.977,7.184l21-21.619L53,21.199L25.025,50z" fill="%2343a047"/></svg>'), #ffffff;
+}
   .card{ 
-    border: 2px solid black;
+    
     position: relative;
   }
   .cardface{
     width: 100%;
     height: 100%;
     position: absolute;
+    border-radius: 10px;
+    border: 2px solid black;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
   }
+  .cardface img{
+    width: 100%;
+    height: 100%;
+    display: flex; }
   .cardface.front{
     background-color: red;
     color:white
   }
   .cardface.back{
-    background-color: blue;
+    background-image: url('../assets/baralho/back.PNG');
+    background-position: center;
     color:white
   }
   </style>
