@@ -50,6 +50,7 @@ export default {
     const flipCard = (payload)=>{
       listCard.value[payload.position].visible = true
       if (userSelect.value[0]) {
+        if((userSelect.value[0].position === payload.position) && (userSelect.value[0].faceVal === payload.faceVal)){return}
         userSelect.value[1] = payload
       }else{
         userSelect.value[0] = payload

@@ -37,7 +37,7 @@
 <template>  
     <div class="card" @click="cardSelected">
         <div v-if="visible" class="cardface front">
-            {{ value }} -- {{ position }}
+            {{ value }} -- {{ matched }}-- {{ position }}
         </div>
         <div v-else class="cardface back">
             BACK{{ position }}
