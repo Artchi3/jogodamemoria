@@ -10,14 +10,33 @@ export default {
   },
   setup(){
     const listCard = ref([])
-    for (let i = 0; i < 20; i++) {
+    // for (let i = 0; i < 20; i++) {
+    //   listCard.value.push({
+    //     value:i,
+    //     visible:false,
+    //     position:i,
+    //     matched: false
+    //   }); 
+    // }
+
+    const cardItems =[0,1,2,3,4,5,6,7,8,9]
+    cardItems.forEach(item => {
       listCard.value.push({
-        value:i,
-        visible:false,
-        position:i,
+        value:item,
+        visible:true,
+        position:null,
         matched: false
-      }); 
-    }
+      })
+      listCard.value.push({
+        value:item,
+        visible:true,
+        position:null,
+        matched: false
+      })
+    })
+    listCard.value = listCard.value.map((card,index)=>{
+      return {...card,position:index}
+    })
 
     const userSelect = ref([])
 
