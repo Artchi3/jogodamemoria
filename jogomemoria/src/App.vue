@@ -1,6 +1,7 @@
 <script>
-import {ref, watch} from 'vue'
+import {computed, ref, watch} from 'vue'
 import GameCard from './components/GameCard.vue' 
+import _ from 'lodash'
 
 export default {
   name: 'App',
@@ -9,9 +10,6 @@ export default {
   },
   setup(){
     const listCard = ref([])
-    const userSelect = ref([])
-    const status = ref([])
-
     for (let i = 0; i < 20; i++) {
       listCard.value.push({
         value:i,
@@ -20,6 +18,23 @@ export default {
         matched: false
       }); 
     }
+
+    const userSelect = ref([])
+
+    const status = computed(()=>{
+      if(pairRamains.value === 0){
+        return 'Vitoria!!'
+      }else{
+        return `Faltam ${pairRamains.value} Pares`
+      }
+    })
+
+    const pairRamains = computed(()=>{
+      const cardsRemaining = listCard.value.filter(card=>card.matched===false).length 
+      return cardsRemaining / 2
+    })
+    
+    
 
     const flipCard = (payload)=>{
       listCard.value[payload.position].visible = true
@@ -30,17 +45,29 @@ export default {
       }
     }
 
+    const shuffle = () =>{
+      listCard.value = _.shuffle(listCard.value)
+    }
+    const restart =()=>{
+      shuffle()
+      listCard.value = listCard.value.map((card, index) => {
+        return {
+          ...card,
+          matched:false,
+          position:index,
+          visible: false
+        }
+      })
+    }
     watch(userSelect,(currValue)=>{ 
       if (currValue.length ===2) { 
         const cardFirst = currValue[0]
         const cardSecnd = currValue[1]
 
-        if (cardFirst.faceVal === cardSecnd.faceVal) {
-          status.value = 'Match'
+        if (cardFirst.faceVal === cardSecnd.faceVal) { 
           listCard.value[cardFirst.position].matched = true
           listCard.value[cardSecnd.position].matched = true 
-        }else{
-          status.value = 'Miss'
+        }else{ 
           listCard.value[cardFirst.position].visible = false
           listCard.value[cardSecnd.position].visible = false
         }
@@ -51,8 +78,12 @@ export default {
     return{
       listCard,
       userSelect,
+      pairRamains,
+      status,
       flipCard,
-      status
+      shuffle,
+      restart
+      
     }
   }
 }
@@ -67,10 +98,10 @@ export default {
       
       <h1>Bem vindo, insira seu nome de jogador para inciar</h1>
       <input type="text">
-      <button></button>
+      <button @click.prevent="shuffle"></button>
       
     </form>
-    <h2>{{ status }}</h2>
+    <h2>{{ pairRamains }}</h2>
     <ul class="gamebord">
       <GameCard v-for="(card,index) in listCard"
         :key="`card-${index}`"
@@ -82,11 +113,11 @@ export default {
       /> 
     </ul>
     <div class="comemoracao">
-      <h1 class="congratulation">Parabens!</h1>
+      <h1 class="congratulation">{{ status }} Parabens!</h1>
       <table class="winners">
-
+        
       </table>
-      <button class="recomecar">
+      <button class="recomecar" @click="restart">
         recomecar
       </button>
     </div>

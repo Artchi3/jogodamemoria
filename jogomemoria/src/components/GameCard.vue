@@ -9,7 +9,7 @@
         },
         visible:{
             type:Boolean,
-            default:false
+            default:true
         },
         position:{
             type:Number,
