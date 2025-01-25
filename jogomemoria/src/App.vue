@@ -9,27 +9,19 @@ export default {
     GameCard
   },
   setup(){
-    const listCard = ref([])
-    // for (let i = 0; i < 20; i++) {
-    //   listCard.value.push({
-    //     value:i,
-    //     visible:false,
-    //     position:i,
-    //     matched: false
-    //   }); 
-    // }
+    const listCard = ref([]) 
 
     const cardItems =[0,1,2,3,4,5,6,7,8,9]
     cardItems.forEach(item => {
-      listCard.value.push({
+      listCard.value.push({ 
         value:item,
-        visible:true,
+        visible:false,
         position:null,
         matched: false
       })
       listCard.value.push({
         value:item,
-        visible:true,
+        visible:false,
         position:null,
         matched: false
       })
@@ -87,8 +79,10 @@ export default {
           listCard.value[cardFirst.position].matched = true
           listCard.value[cardSecnd.position].matched = true 
         }else{ 
-          listCard.value[cardFirst.position].visible = false
-          listCard.value[cardSecnd.position].visible = false
+          setTimeout(() => {
+            listCard.value[cardFirst.position].visible = false
+            listCard.value[cardSecnd.position].visible = false
+          }, 2000);
         }
         
         userSelect.value.length = 0
