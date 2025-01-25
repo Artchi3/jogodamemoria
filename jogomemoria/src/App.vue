@@ -24,12 +24,14 @@ export default {
     cardItems.forEach(item => {
       listCard.value.push({ 
         value:item,
+        variant:1,
         visible:false,
         position:null,
         matched: false
       })
       listCard.value.push({
         value:item,
+        variant:2,
         visible:false,
         position:null,
         matched: false
@@ -125,16 +127,16 @@ export default {
       
     </form>
     <h2>{{ pairRamains }}</h2>
-    <ul class="gamebord">
-      <GameCard v-for="(card,index) in listCard"
-        :key="`card-${index}`"
+    <transition-group tag="shuffleAnimation" class="gamebord">
+      <GameCard v-for="(card) in listCard"
+        :key="`${card.value}-${card.variant}`"
         :value="card.value"
         :visible="card.visible"
         :position="card.position"
         :matched="card.matched"
         @card-select="flipCard"
       /> 
-    </ul>
+    </transition-group>
     <div class="comemoracao">
       <h1 class="congratulation">{{ status }} Parabens!</h1>
       <table class="winners">
@@ -167,5 +169,8 @@ body{
   grid-row-gap: 25px ;
   grid-column-gap: 25px ;
   justify-content: center;
+}
+.shuffleAnimation{
+  transition: transform 0.8s ease-in;
 }
 </style>
