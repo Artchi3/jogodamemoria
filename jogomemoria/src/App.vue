@@ -2,6 +2,7 @@
 import {computed, ref, watch} from 'vue'
 import GameCard from './components/GameCard.vue' 
 import _ from 'lodash'
+import {lounchSingle,lounchMultiple} from './firula/conffeti'
 
 export default {
   name: 'App',
@@ -46,7 +47,11 @@ export default {
 
     const status = computed(()=>{
       if(pairRamains.value === 0){
+
+
         return 'Vitoria!!'
+
+
       }else{
         return `Faltam ${pairRamains.value} Pares`
       }
@@ -63,7 +68,7 @@ export default {
       listCard.value[payload.position].visible = true
       if (userSelect.value[0]) {
         if((userSelect.value[0].position === payload.position) && (userSelect.value[0].faceVal === payload.faceVal)){return}
-        userSelect.value[1] = payload
+        userSelect.value[1] = payload; 
       }else{
         userSelect.value[0] = payload
       }
@@ -82,14 +87,23 @@ export default {
       });
       shuffleCards();
     }
+
+    watch(pairRamains, currValue =>{
+      if(currValue === 0){
+        lounchMultiple()
+      }
+    })
     watch(userSelect,(currValue)=>{ 
       if (currValue.length ===2) { 
         const cardFirst = currValue[0]
         const cardSecnd = currValue[1]
 
         if (cardFirst.faceVal === cardSecnd.faceVal) { 
-          listCard.value[cardFirst.position].matched = true
-          listCard.value[cardSecnd.position].matched = true 
+          setTimeout(() => {
+            listCard.value[cardFirst.position].matched = true
+            listCard.value[cardSecnd.position].matched = true 
+            lounchSingle()
+          },600)
         }else{ 
           setTimeout(() => {
             listCard.value[cardFirst.position].visible = false
@@ -151,7 +165,7 @@ export default {
 
 <style>
 body{
-  background-color: #133017;
+  background-color: #35654D;
 }
 #app {
   font-family: Avenir, Helvetica, Arial, sans-serif;
