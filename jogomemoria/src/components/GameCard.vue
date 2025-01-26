@@ -45,11 +45,9 @@ import { computed } from 'vue';
     <div class="card" :class="animatedStyles" @click="cardSelected">
         <div  class="cardface front">
             <label class="checkmark" v-if="matched"></label>
-            <img :src="`/baralho/${value}.PNG`" :alt="value">
-            {{ value }} {{ position }} -- {{ faceVal }} 
-            
+            <img :src="`/baralho/${value}.PNG`" :alt="value"> 
         </div>
-        <div class="cardface back"> {{ value }} {{ position }} -- {{ faceVal }} 
+        <div class="cardface back"> 
         </div>    
     </div>
 

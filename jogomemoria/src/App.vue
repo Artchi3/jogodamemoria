@@ -1,7 +1,7 @@
 <script>
 import {computed, ref, watch} from 'vue'
 import GameCard from './components/GameCard.vue' 
-import WinnersPool from './components/WinnersPool.vue' 
+import WinnersPool from './components/WinnersPool.vue'  
 import _ from 'lodash'
 import {lounchSingle,lounchMultiple} from './firula/conffeti' 
 
@@ -14,54 +14,9 @@ export default {
   setup(){
     //Cards
     const listCard = ref([])  
-    const cardItems =[1,2,3,4,5,6,7,8,9,10]
-
-    //Players
-    const players = ['Lua','Artchi3','Floyd'];
-    const playerList = ref([]);
-    const playerScores =['3', '7', '5']
-
-    //UI
-    const streaks = ref(0) 
-    const rounds = ref(0)  
-    const gameStarted = ref(false) 
-    const playerName = ref('')
-    // const inputPlayerScore = 0
-
-    const isDisabled = computed(()=>{
-          if(gameStarted.value){
-            return true
-          }
-          return false
-    })
-    const startGame = () =>{
-      if(playerName.value !== '' && playerName.value !== null && playerName.value.length > 2){ 
-        
-        if(players.indexOf(playerName.value) == -1){
-          players.push(playerName.value);  
-          gameStarted.value = true
-          restart()
-        } else{
-          alert('Nome de jogador ja existe, escolha um novo')
-        }
-          
-      }else{
-        alert('Insira um nome de jogador com minimo de 3 letras antes de iniciar o jogo')
-      } 
-
-    }
-
+    const cardItems =[1,2,3,4,5,6,7,8,9,10] 
     
-
-    //Make sort every time a player wins
-    
-
-    const shuffleCards = () =>{   
-      listCard.value =  _.shuffle(listCard.value) 
-      listCard.value = listCard.value.map((card,index)=>{
-        return {...card,position:index}
-      })
-    }
+    //Cards instance
     cardItems.forEach(item => {
       listCard.value.push({ 
         value:item,
@@ -79,8 +34,38 @@ export default {
       })
     }) 
 
-    const userSelect = ref([])
+    //Players Handlers
+    const players = ['Lua','Artchi3','Floyd'];
+    const playerList = ref([]);
+    const playerScores =['3', '7', '5'];
+    const playerName = ref('');
 
+    //UI & controls
+    const streaks = ref(0);
+    const rounds = ref(0);
+    const gameStarted = ref(false);
+    const userSelect = ref([]);
+    const missMatch =ref(false)
+
+    //Computes args
+    const isRound = computed(()=>{
+      if(missMatch.value){
+          return 'blink'
+      }
+      return ''
+    })
+    const isDisabled = computed(()=>{
+          if(gameStarted.value){
+            return true
+          }
+          return false
+    });
+    const winnerPrize = computed(()=>{
+        if (pairRamains.value === 0) { 
+          return 'is-active'
+        }
+        return ''
+    }); 
     const status = computed(()=>{
       if(pairRamains.value === 0){
 
@@ -91,43 +76,19 @@ export default {
       }else{
         return `Faltam ${pairRamains.value} Pares`
       }
-    })
-
+    }) 
     const pairRamains = computed(()=>{
       const cardsRemaining = listCard.value.filter(card=>card.matched===false).length 
       return cardsRemaining / 2
-    }) 
+    })  
 
-    const flipCard = (payload)=>{
-      listCard.value[payload.position].visible = true
-      if (userSelect.value[0]) {
-        if((userSelect.value[0].position === payload.position) && (userSelect.value[0].faceVal === payload.faceVal)){return}
-        userSelect.value[1] = payload; 
-      }else{
-        userSelect.value[0] = payload
-      }
+    //Game essencial Functions
+    const shuffleCards = () =>{   
+      listCard.value =  _.shuffle(listCard.value) 
+      listCard.value = listCard.value.map((card,index)=>{
+        return {...card,position:index}
+      })
     }
-    
-    const restart =()=>{
-      
-      listCard.value = listCard.value.map((card, index) => {
-        return {
-          ...card,
-          matched:false,
-          position:index,
-          visible: false
-        }
-      });
-      rounds.value = 0
-      streaks.value = 0
-      shuffleCards();
-    }
-    const winnerPrize =computed(()=>{
-        if (pairRamains.value === 0) { 
-          return 'is-active'
-        }
-        return ''
-    })
     const winnerHandle =() =>{ 
       playerList.value.splice(0); 
       playerScores.push(rounds)
@@ -140,21 +101,58 @@ export default {
           })
       })  
       
-      playerList.value = playerList.value.sort((a, b) => a.rounds - b.rounds)
-      console.log(playerList.value) 
+      playerList.value = playerList.value.sort((a, b) => a.rounds - b.rounds) 
+    } 
+    const flipCard = (payload)=>{
+      listCard.value[payload.position].visible = true
+      if (userSelect.value[0]) {
+        if((userSelect.value[0].position === payload.position) && (userSelect.value[0].faceVal === payload.faceVal)){return}
+        userSelect.value[1] = payload; 
+      }else{
+        userSelect.value[0] = payload
+      }
+    } 
+    const startGame = () =>{
+      if(playerName.value !== '' && playerName.value !== null && playerName.value.length > 2){ 
+        
+        if(players.indexOf(playerName.value) == -1){
+          players.push(playerName.value);  
+          gameStarted.value = true
+          restart()
+        } else{
+          alert('Nome de jogador ja existe, escolha um novo')
+        }
+          
+      }else{
+        alert('Insira um nome de jogador com minimo de 3 letras antes de iniciar o jogo')
+      } 
+
     }
+    const restart =()=>{ 
+      listCard.value = listCard.value.map((card, index) => {
+        return {
+          ...card,
+          matched:false,
+          position:index,
+          visible: false
+        }
+      });
+      rounds.value = 0
+      streaks.value = 0
+      shuffleCards();
+    } 
+
+    //Game Watcher
     watch(pairRamains, currValue =>{
       if(currValue === 0){
         winnerHandle()
         lounchMultiple() 
       }
-    })
-    
+    }) 
     watch(userSelect,(currValue)=>{ 
       if (currValue.length ===2) { 
         const cardFirst = currValue[0]
         const cardSecnd = currValue[1]
-
         
         if (cardFirst.faceVal === cardSecnd.faceVal) { 
           streaks.value++ 
@@ -163,13 +161,15 @@ export default {
             listCard.value[cardSecnd.position].matched = true 
             lounchSingle() 
           },600)
-        }else{  
-          
+        }else{   
           rounds.value++
+          streaks.value = 0 
+          setTimeout(() => {missMatch.value = true},300)
           setTimeout(() => {
+            missMatch.value = false
             listCard.value[cardFirst.position].visible = false
             listCard.value[cardSecnd.position].visible = false
-          }, 2000);
+          }, 1500);
         }
         userSelect.value.length = 0
       }
@@ -177,20 +177,23 @@ export default {
  
     return{
       listCard,
-      userSelect,
-      pairRamains,
-      status,
-      flipCard,
-      shuffleCards,
-      restart,
-      playerList,
+      userSelect, 
+      playerList, 
+      playerName, 
+      playerScores,
       rounds,
       streaks,
-      playerName,
-      startGame,
+      //Computed args
+      pairRamains,
       winnerPrize,
-      playerScores,
-      isDisabled
+      isDisabled,
+      status,
+      isRound,
+      //functions
+      flipCard,
+      shuffleCards,
+      startGame,
+      restart
     }
   }
 
@@ -199,7 +202,7 @@ export default {
 
 <template> 
   <div class="game">
-    <div class="missmatchUi"></div>
+    <div :class="isRound" class="missmatchUi"></div>
     <h1>Bem vindo, insira seu nome de jogador para inciar</h1>
     <form action="" class="greetinggame">
       <input minlength='3' maxLength='10' class="greentingInput" v-model="playerName" type="text" placeholder="Artchi3" :disabled='isDisabled' />
@@ -241,6 +244,7 @@ export default {
       </button>
     </div>
   </div>
+  <footer><p>2025 - Built by Artchi3</p><p>Powered by Vue <img src="./assets/logo.png" alt="vue logo"></p></footer>
 </template> 
 
 <style>
@@ -248,20 +252,23 @@ html,body{
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  background-color: #35654D;
+  background: url('../public/baralho/flat-pokertable.avif') center center repeat,#35654D;
+  background-size: 12em;
+  background-blend-mode: multiply;
 }
-.game{
-  position: relative;
-  width: 100%;
-  height: 100vh;
+footer{
+  width: 100vw;
+  height: 30px;
   display: flex;
-  flex-direction: column;
+  align-items: center;
+  justify-content: space-evenly;
+  background-color: #000; 
+  position: sticky;
+  bottom: 0;
+  left: 0;
 }
-h1,h2,h3,p,button,input{
-  font-family: "Outfit", serif;
-}
-h1{
-  margin:20px;
+footer img{
+  width: 15px;
 }
 #app {
   font-family: Avenir, Helvetica, Arial, sans-serif;
@@ -270,7 +277,24 @@ h1{
   text-align: center;
   color: #fff; 
   margin: 0;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
 }
+.game{
+  position: relative;
+  width: 100vw;
+  height: auto;
+  display: flex;
+  flex-direction: column;
+  margin: 50px 0;
+}
+h1,h2,h3,p,button,input{
+  font-family: "Outfit", serif;
+}
+h1{
+  margin:20px;
+} 
 .gamebord{
   display: grid;
   grid-template-columns: 75px 75px 75px 75px 75px ;
@@ -282,10 +306,9 @@ h1{
 .greetinggame{
   display: flex;
   justify-content: center;
-  align-items: center;
-
-  /* border: 3px solid red; */
+  align-items: center;  
 }
+
 .greentingInput{
   width: 200px;
   height: 44px;
@@ -308,16 +331,6 @@ h1{
 .shuffleAnimation{
   transition: transform 0.8s ease-in;
 }
-.missmatchUi{
-  display: none;
-  width: 100%;
-  height: 100%;
-  position: absolute;
-  top: 0;
-  left: 0;
-  z-index: 2;
-  background-color: rgba(194,2,2,0.38);
-}
 .comemoracao{
   position: absolute;
   display: flex;
@@ -334,23 +347,13 @@ h1{
   left: 0;
   right: 0;
   margin: auto;
+  width: 100vw;
+  height: 100vh;
 }
 .comemoracao.is-active{
   visibility: visible;
   opacity: 1;
-}
-.comemoracao .player{
-  display: grid; 
-  grid-template-columns:  100px 100px ;
-  grid-template-rows: auto;
-  grid-row-gap: 0 ;
-  grid-column-gap: 0 ; 
-}
-.comemoracao .player p{
-  border: 2px solid #000; 
-  border-top: none;
-  border-radius: 1px;
-}
+} 
 button{
   width: 150px;
   height: 50px;
@@ -401,6 +404,19 @@ button{
 .winners .headerP p{
   border-bottom: 2px solid #000; 
   border-radius: 5px;
+} 
+.missmatchUi{
+  display: none;
+  width: 100vw;
+  height: 100vh;
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  margin: auto; 
+  z-index: 2;
+  background-color: rgba(194,2,2,0.38);
 }
 .pontuacao{
   width:55%;
@@ -410,5 +426,18 @@ button{
   justify-content: space-between;
   margin: 30px auto;
 } 
+.pontuacao h1{
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 150px;
+  height: 150px;
+}
+.blink{
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+}
 </style>
 
