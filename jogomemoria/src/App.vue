@@ -19,27 +19,41 @@ export default {
     //Players
     const players = ['Lua','Artchi3','Floyd'];
     const playerList = ref([]);
+    const playerScores =['3', '7', '5']
 
     //UI
     const streaks = ref(0) 
     const rounds = ref(0)  
-    
-    // const playerName = ''
+    const gameStarted = ref(false) 
+    const playerName = ref('')
     // const inputPlayerScore = 0
 
-    players.forEach((item)=> {
-      var splitName = item.split("");
-      playerList.value.push({
-        name:item,
-        winner: true,
-        rounds: splitName.length
-      })
+    const isDisabled = computed(()=>{
+          if(gameStarted.value){
+            return true
+          }
+          return false
     })
+    const startGame = () =>{
+      if(playerName.value !== '' && playerName.value !== null && playerName.value.length > 2){ 
+        
+        if(players.indexOf(playerName.value) == -1){
+          players.push(playerName.value);  
+          gameStarted.value = true
+          restart()
+        } else{
+          alert('Nome de jogador ja existe, escolha um novo')
+        }
+          
+      }else{
+        alert('Insira um nome de jogador com minimo de 3 letras antes de iniciar o jogo')
+      } 
+
+    }
+
+    
 
     //Make sort every time a player wins
-    playerList.value = playerList.value.sort((a, b) => a.rounds - b.rounds)
-    console.log(playerList.value)
-    
     
 
     const shuffleCards = () =>{   
@@ -104,12 +118,35 @@ export default {
           visible: false
         }
       });
+      rounds.value = 0
+      streaks.value = 0
       shuffleCards();
     }
+    const winnerPrize =computed(()=>{
+        if (pairRamains.value === 0) { 
+          return 'is-active'
+        }
+        return ''
+    })
+    const winnerHandle =() =>{ 
+      playerList.value.splice(0); 
+      playerScores.push(rounds)
 
+      players.forEach((item,index)=> { 
+          playerList.value.push({
+            name:item,
+            winner: true,
+            rounds: playerScores[index]
+          })
+      })  
+      
+      playerList.value = playerList.value.sort((a, b) => a.rounds - b.rounds)
+      console.log(playerList.value) 
+    }
     watch(pairRamains, currValue =>{
       if(currValue === 0){
-        lounchMultiple()
+        winnerHandle()
+        lounchMultiple() 
       }
     })
     
@@ -148,7 +185,12 @@ export default {
       restart,
       playerList,
       rounds,
-      streaks 
+      streaks,
+      playerName,
+      startGame,
+      winnerPrize,
+      playerScores,
+      isDisabled
     }
   }
 
@@ -158,16 +200,15 @@ export default {
 <template> 
   <div class="game">
     <div class="missmatchUi"></div>
+    <h1>Bem vindo, insira seu nome de jogador para inciar</h1>
     <form action="" class="greetinggame">
-      
-      <h1>Bem vindo, insira seu nome de jogador para inciar</h1>
-      <input v-model="playerName" type="text" placeholder="Artchi3">
-      <button @click.prevent="restart">Iniciar</button>
-      
+      <input minlength='3' maxLength='10' class="greentingInput" v-model="playerName" type="text" placeholder="Artchi3" :disabled='isDisabled' />
+      <button class="startgame" @click.prevent="startGame">Iniciar</button>
     </form>
     <div class="pontuacao">
-      <h2>Rodadas {{ rounds }}</h2>
-      <h2>Match streaks {{ streaks }}</h2>
+      <h2>Rodadas: <p>{{ rounds }}</p></h2>
+      <h1>Player: <p>{{ playerName }}</p></h1>
+      <h2>Match streaks: <p>{{ streaks }}</p></h2>
       
     </div>
     <transition-group tag="shuffleAnimation" class="gamebord">
@@ -180,9 +221,14 @@ export default {
         @card-select="flipCard"
       /> 
     </transition-group>
-    <div class="comemoracao">
-      <h1 class="congratulation">{{ status }} Parabens!</h1>
+    <div :class="winnerPrize" class="comemoracao">
+      <h1 class="congratulation">{{ status }}</h1>
+
       <div class="winners">
+        <div class="headerP" >
+          <p class="name">Player</p>
+          <p class="score">Rodadas</p>
+        </div>
         <WinnersPool v-for="(players) in playerList"
         :key="`${players.name}`"
         :name="players.name"
@@ -211,6 +257,12 @@ html,body{
   display: flex;
   flex-direction: column;
 }
+h1,h2,h3,p,button,input{
+  font-family: "Outfit", serif;
+}
+h1{
+  margin:20px;
+}
 #app {
   font-family: Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
@@ -226,6 +278,32 @@ html,body{
   grid-row-gap: 25px ;
   grid-column-gap: 25px ;
   justify-content: center;
+}
+.greetinggame{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  /* border: 3px solid red; */
+}
+.greentingInput{
+  width: 200px;
+  height: 44px;
+  outline: none;
+  border:2px solid #000;
+  background-image:none;
+  color: #000;
+  background-color:#fff;
+  -webkit-box-shadow: none;
+  -moz-box-shadow: none;
+  box-shadow: none;  
+  padding-left:15px ;
+  font-family: "Outfit", serif;
+}
+.greentingInput::placeholder{
+  color:#000;
+  opacity: 0.5;
+  font-family: "Outfit", serif;
 }
 .shuffleAnimation{
   transition: transform 0.8s ease-in;
@@ -246,15 +324,83 @@ html,body{
   align-items: center;
   justify-content: center;
   flex-direction: column;
-  background-color: aqua;
+  background-color: #5E2129;
   margin: 30px;
+  visibility: hidden;
+  opacity: 0;
+  transition: visibility 0s, opacity 0.5s linear;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  margin: auto;
+}
+.comemoracao.is-active{
+  visibility: visible;
+  opacity: 1;
+}
+.comemoracao .player{
+  display: grid; 
+  grid-template-columns:  100px 100px ;
+  grid-template-rows: auto;
+  grid-row-gap: 0 ;
+  grid-column-gap: 0 ; 
+}
+.comemoracao .player p{
+  border: 2px solid #000; 
+  border-top: none;
+  border-radius: 1px;
+}
+button{
+  width: 150px;
+  height: 50px;
+  color: #fff;
+  background-color: #000;
+  font-weight: 600;
+  border: none;
+  padding: 0; 
+  cursor: pointer;
+  outline: inherit;
+  text-align: center; 
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.recomecar::before{ 
+  margin-right: 10px;
+  display: block;
+  width:25px;
+  height: 25px;
+  content: '';
+  background: url('https://img.icons8.com/?size=25&id=11676&format=png&color=FFFFFF')
+}
+.startgame::before{ 
+  margin-right: 10px;
+  display: block;
+  width:25px;
+  height: 25px;
+  content: '';
+  background: url('https://img.icons8.com/?size=25&id=397&format=png&color=FFFFFF')
 }
 .winners{
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: space-between;
-  margin: 0px 30px 30px;
+  margin: 0px 30px 30px; 
+  min-width: 250px;
+  min-height: 250px;
+}
+.winners .headerP{
+  display: grid; 
+  grid-template-columns:  100px 100px ;
+  grid-template-rows: auto;
+  grid-row-gap: 0 ;
+  grid-column-gap: 0 ; 
+}
+.winners .headerP p{
+  border-bottom: 2px solid #000; 
+  border-radius: 5px;
 }
 .pontuacao{
   width:55%;
@@ -263,9 +409,6 @@ html,body{
   align-items: center;
   justify-content: space-between;
   margin: 30px auto;
-}
-.blink { 
-  display: block;
 } 
 </style>
 

@@ -41,7 +41,7 @@ setTimeout(shoot, 200);
 export const lounchMultiple =()=>{
     const duration = 15 * 1000;
     const animationEnd = Date.now() + duration;
-    const defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 0,colors: ['5E2129', 'FFFFFF', 'FF0000','#35654D'] };
+    const defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 0,colors: ['5E2129', 'FFFFFF', 'FF0000','35654D'] };
     
     function randomInRange(min, max) {
       return Math.random() * (max - min) + min;
