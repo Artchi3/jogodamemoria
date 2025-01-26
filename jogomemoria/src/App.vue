@@ -1,23 +1,49 @@
 <script>
 import {computed, ref, watch} from 'vue'
 import GameCard from './components/GameCard.vue' 
+import WinnersPool from './components/WinnersPool.vue' 
 import _ from 'lodash'
-import {lounchSingle,lounchMultiple} from './firula/conffeti'
+import {lounchSingle,lounchMultiple} from './firula/conffeti' 
 
 export default {
   name: 'App',
   components: {
-    GameCard
+    GameCard,
+    WinnersPool
   },
   setup(){
-    const listCard = ref([]) 
-
+    //Cards
+    const listCard = ref([])  
     const cardItems =[1,2,3,4,5,6,7,8,9,10]
 
+    //Players
+    const players = ['Lua','Artchi3','Floyd'];
+    const playerList = ref([]);
+
+    //UI
+    const streaks = ref(0) 
+    const rounds = ref(0)  
+    
+    // const playerName = ''
+    // const inputPlayerScore = 0
+
+    players.forEach((item)=> {
+      var splitName = item.split("");
+      playerList.value.push({
+        name:item,
+        winner: true,
+        rounds: splitName.length
+      })
+    })
+
+    //Make sort every time a player wins
+    playerList.value = playerList.value.sort((a, b) => a.rounds - b.rounds)
+    console.log(playerList.value)
+    
+    
+
     const shuffleCards = () =>{   
-      listCard.value =  _.shuffle(listCard.value)
-      console.log(listCard)
-      console.log(listCard.value) 
+      listCard.value =  _.shuffle(listCard.value) 
       listCard.value = listCard.value.map((card,index)=>{
         return {...card,position:index}
       })
@@ -26,22 +52,18 @@ export default {
       listCard.value.push({ 
         value:item,
         variant:1,
-        visible:false,
+        visible:true,
         position:null,
         matched: false
       })
       listCard.value.push({
         value:item,
         variant:2,
-        visible:false,
+        visible:true,
         position:null,
         matched: false
       })
-    })
-    
-    
-    
-    
+    }) 
 
     const userSelect = ref([])
 
@@ -60,9 +82,7 @@ export default {
     const pairRamains = computed(()=>{
       const cardsRemaining = listCard.value.filter(card=>card.matched===false).length 
       return cardsRemaining / 2
-    })
-    
-    
+    }) 
 
     const flipCard = (payload)=>{
       listCard.value[payload.position].visible = true
@@ -73,7 +93,6 @@ export default {
         userSelect.value[0] = payload
       }
     }
-
     
     const restart =()=>{
       
@@ -93,27 +112,32 @@ export default {
         lounchMultiple()
       }
     })
+    
     watch(userSelect,(currValue)=>{ 
       if (currValue.length ===2) { 
         const cardFirst = currValue[0]
         const cardSecnd = currValue[1]
 
+        
         if (cardFirst.faceVal === cardSecnd.faceVal) { 
+          streaks.value++ 
           setTimeout(() => {
             listCard.value[cardFirst.position].matched = true
             listCard.value[cardSecnd.position].matched = true 
-            lounchSingle()
+            lounchSingle() 
           },600)
-        }else{ 
+        }else{  
+          
+          rounds.value++
           setTimeout(() => {
             listCard.value[cardFirst.position].visible = false
             listCard.value[cardSecnd.position].visible = false
           }, 2000);
         }
-        
         userSelect.value.length = 0
       }
     },{deep:true})
+ 
     return{
       listCard,
       userSelect,
@@ -121,26 +145,31 @@ export default {
       status,
       flipCard,
       shuffleCards,
-      restart
-      
+      restart,
+      playerList,
+      rounds,
+      streaks 
     }
   }
+
 }
 </script>
 
-<template>
-  <img alt="Vue logo" src="./assets/logo.png">
-   
+<template> 
   <div class="game">
-    
+    <div class="missmatchUi"></div>
     <form action="" class="greetinggame">
       
       <h1>Bem vindo, insira seu nome de jogador para inciar</h1>
-      <input type="text" placeholder="Artchi3">
-      <button @click.prevent="shuffleCards">Iniciar</button>
+      <input v-model="playerName" type="text" placeholder="Artchi3">
+      <button @click.prevent="restart">Iniciar</button>
       
     </form>
-    <h2>{{ pairRamains }}</h2>
+    <div class="pontuacao">
+      <h2>Rodadas {{ rounds }}</h2>
+      <h2>Match streaks {{ streaks }}</h2>
+      
+    </div>
     <transition-group tag="shuffleAnimation" class="gamebord">
       <GameCard v-for="(card) in listCard"
         :key="`${card.value}-${card.variant}`"
@@ -153,28 +182,42 @@ export default {
     </transition-group>
     <div class="comemoracao">
       <h1 class="congratulation">{{ status }} Parabens!</h1>
-      <table class="winners">
-        
-      </table>
+      <div class="winners">
+        <WinnersPool v-for="(players) in playerList"
+        :key="`${players.name}`"
+        :name="players.name"
+        :winner="players.winner"
+        :rounds="players.rounds"
+        />
+      </div>
       <button class="recomecar" @click="restart">
-        recomecar
+        Recomecar
       </button>
     </div>
   </div>
 </template> 
 
 <style>
-body{
+html,body{
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
   background-color: #35654D;
+}
+.game{
+  position: relative;
+  width: 100%;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
 }
 #app {
   font-family: Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
-  color: #fff;
-  margin-top: 60px;
-  
+  color: #fff; 
+  margin: 0;
 }
 .gamebord{
   display: grid;
@@ -187,4 +230,42 @@ body{
 .shuffleAnimation{
   transition: transform 0.8s ease-in;
 }
+.missmatchUi{
+  display: none;
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 2;
+  background-color: rgba(194,2,2,0.38);
+}
+.comemoracao{
+  position: absolute;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  background-color: aqua;
+  margin: 30px;
+}
+.winners{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  margin: 0px 30px 30px;
+}
+.pontuacao{
+  width:55%;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  margin: 30px auto;
+}
+.blink { 
+  display: block;
+} 
 </style>
+
