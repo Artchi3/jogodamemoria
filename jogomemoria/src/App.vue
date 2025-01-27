@@ -287,7 +287,8 @@ footer img{
   height: auto;
   display: flex;
   flex-direction: column;
-  margin: 50px 0;
+  margin: 0px;
+  padding: 30px 0;
 }
 h1,h2,h3,p,button,input{
   font-family: "Outfit", serif;
@@ -408,13 +409,14 @@ button{
 .missmatchUi{
   display: none;
   width: 100vw;
-  height: 100vh;
+  min-height: 100vh;
+  height: auto;
+  margin: 0;
   position: absolute;
   top: 0;
   left: 0;
   bottom: 0;
-  right: 0;
-  margin: auto; 
+  right: 0; 
   z-index: 2;
   background-color: rgba(194,2,2,0.38);
 }
@@ -435,8 +437,7 @@ button{
   height: 150px;
 }
 .blink{
-  width: 100vw;
-  height: 100vh;
+  width: 100vw; 
   display: flex;
 }
 @media (max-width: 720px) {
@@ -538,9 +539,9 @@ button{
     height: 150px;
   }
   .blink{
-  width: 100vw; 
-  display: flex;
-  height: 1020px;
+    width: 100vw; 
+    display: flex;
+    height: auto;
   }
 }
 </style>
