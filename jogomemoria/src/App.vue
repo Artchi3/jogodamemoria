@@ -439,5 +439,109 @@ button{
   height: 100vh;
   display: flex;
 }
+@media (max-width: 720px) {
+  #app {
+  font-family: Avenir, Helvetica, Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-align: center;
+  color: #fff; 
+  margin: 0;
+  width: 100vw;
+  height: 100vh;
+  overflow: scroll;
+  }
+
+  .game{
+    position: relative;
+    width: 100vw;
+    height: auto;
+    min-height: 1020px;
+    display: flex;
+    flex-direction: column;
+    margin: 0 0 !important;
+  }
+  .gamebord{
+    display: grid;
+    grid-template-columns: 55px 55px 55px 55px !important;
+    grid-template-rows: 75px 75px 75px 75px 75px !important;
+    grid-row-gap: 25px ;
+    grid-column-gap: 25px ;
+    justify-content: center;
+  }
+  .greetinggame{
+    display: flex;
+    justify-content: center;
+    align-items: center;  
+  }
+
+  .greentingInput{
+    width: 200px;
+    height: 44px;
+    outline: none;
+    border:2px solid #000;
+    background-image:none;
+    color: #000;
+    background-color:#fff;
+    -webkit-box-shadow: none;
+    -moz-box-shadow: none;
+    box-shadow: none;  
+    padding-left:15px ;
+    font-family: "Outfit", serif;
+  }
+  .greentingInput::placeholder{
+    color:#000;
+    opacity: 0.5;
+    font-family: "Outfit", serif;
+  }
+  .shuffleAnimation{
+    transition: transform 0.8s ease-in;
+  }
+  .comemoracao{
+    position: absolute;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    background-color: #5E2129;
+    margin: 30px;
+    visibility: hidden;
+    opacity: 0;
+    transition: visibility 0s, opacity 0.5s linear;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    margin: 0 !important;
+    width: 100vw;
+    height: 100vh;
+    min-height: 1020px;
+  }
+  .comemoracao.is-active{
+    visibility: visible;
+    opacity: 1;
+  }   
+  .pontuacao{
+  width:100%;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  margin: 30px auto;
+} 
+  .pontuacao h1{
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 150px;
+    height: 150px;
+  }
+  .blink{
+  width: 100vw; 
+  display: flex;
+  height: 1020px;
+  }
+}
 </style>
 
